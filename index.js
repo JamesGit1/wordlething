@@ -1,5 +1,5 @@
 const fs = require('fs');
-var data = "";
+var data = "", dayNumber, score, lines;
 
 // Main API code for current data retrieval
 var
@@ -9,22 +9,29 @@ var
 var app = express();
 //const PORT = 8080;
 
-try {
-    data = fs.readFileSync('input.txt', 'utf8')
-} catch (err) {
-    console.error(err)
+app.use( express.json() )
+
+function loadData(){
+    try {
+        data = fs.readFileSync('input.txt', 'utf8')
+    } catch (err) {
+        console.error(err)
+    }
+    
+    lines = data.toString().split("\n");
+    
+    dayNumber = lines[0].split(" ")[1];
+    score = lines[0].split(" ")[2].replace("\r","");
+    
+    // Just get answerboard
+    lines.shift();
+    lines.shift();
 }
 
-var lines = data.toString().split("\n");
-
-const dayNumber = lines[0].split(" ")[1];
-const score = lines[0].split(" ")[2].replace("\r","");
-
-// Just get answerboard
-lines.shift();
-lines.shift();
+//console.log(lines);
 
 app.get('/todaysWordle', (req, res) => {
+    loadData();
     res.set('Access-Control-Allow-Origin', '*'); //There's issues on webserver if CORS access isn't set
 
     res.status(200).send({
@@ -32,6 +39,30 @@ app.get('/todaysWordle', (req, res) => {
         score: score,
         answer: lines,
     })
+});
+
+app.post('/todaysWordle', (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*'); //There's issues on webserver if CORS access isn't set
+    const { id, wordle } = req.body;
+
+    if(!wordle || id !== "B@ufeFfsmcE57cJZSE%5Sn@C&5UC*CcEWnF&e8TthF@ZcTmwp3LsPwLHFMZ7SewEhkMdUJWQkcEe3sNY&Kjw@oAe!k2!@dkPe93$"){
+        res.status(418).send({ message: 'Wordle Request Failed, Please provide correct id and data for wordle'})
+    }
+    else{
+        console.log(wordle);
+
+        // write JSON string to a file
+        fs.writeFile('input.txt', wordle, (err) => {
+            if (err) {
+                throw err;
+            }
+            console.log("JSON data is saved.");
+        });
+
+        res.status(200).send({
+            message: 'submitted todays wordle!'
+        })
+    }
 });
 
 // Start the server
