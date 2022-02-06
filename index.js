@@ -1,4 +1,5 @@
 const fs = require('fs');
+var cors = require('cors')
 var data = "", dayNumber, score, lines;
 
 // Main API code for current data retrieval
@@ -7,6 +8,7 @@ var
     http = require('http');
 
 var app = express();
+app.use(cors())
 //const PORT = 8080;
 
 app.use( express.json() )
@@ -32,7 +34,6 @@ function loadData(){
 
 app.get('/todaysWordle', (req, res) => {
     loadData();
-    res.set('Access-Control-Allow-Origin', '*'); //There's issues on webserver if CORS access isn't set
 
     res.status(200).send({
         dayNumber: dayNumber,
@@ -42,7 +43,6 @@ app.get('/todaysWordle', (req, res) => {
 });
 
 app.post('/todaysWordle', (req, res) => {
-    res.set('Access-Control-Allow-Origin', '*'); //There's issues on webserver if CORS access isn't set
     const { id, wordle } = req.body;
 
     if(!wordle || id !== "B@ufeFfsmcE57cJZSE%5Sn@C&5UC*CcEWnF&e8TthF@ZcTmwp3LsPwLHFMZ7SewEhkMdUJWQkcEe3sNY&Kjw@oAe!k2!@dkPe93$"){
