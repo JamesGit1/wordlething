@@ -64,7 +64,7 @@ app.post('/todaysWordle', (req, res) => {
         const utc = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
 
         // write JSON string to a file
-        fs.writeFile('input.txt', addStr(wordle, wordle.indexOf("\n"), utc), (err) => {
+        fs.writeFile('input.txt', addStr(wordle, wordle.indexOf("\n"), " " + utc), (err) => {
             if (err) {
                 throw err;
             }
